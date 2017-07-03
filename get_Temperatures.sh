@@ -3,9 +3,11 @@
 _FROME=$(date -d "10 days ago" "+%s")
 _OUTFILE=./out.csv
 
+cd /home/pirate/bin/mobilealerts
+
 #echo $_FROME
 
-source /root/bin/mobilealerts/credentials.sh
+source ./credentials.sh
 _DEVICEID=$_DEVICEID1
 
 # rain sensor
@@ -25,7 +27,8 @@ curl -s -i -k  -X 'POST' \
 	sed 's/ mm//g' |
 	sed 's/\([0-9][0-9]\).\([0-9][0-9]\).\([0-9][0-9][0-9][0-9]\)/\3-\2-\1/' | # put the date in the right format
 	sed 's/^;//g' > $_OUTFILE
-echo -e ".separator ';' \n.import $_OUTFILE sensor_rain" | sqlite3 /root/bin/mobilealerts/mobilealerts.db
+echo -e ".separator ';' \n.import $_OUTFILE sensor_rain" | sqlite3 ./mobilealerts.db
+cp $_OUTFILE rain.csv
 
 # temp sensor
 _DEVICEID=$_DEVICEID0
@@ -45,7 +48,7 @@ curl -s -i -k  -X 'POST' \
 	sed 's/%//g' |
 	sed 's/\([0-9][0-9]\).\([0-9][0-9]\).\([0-9][0-9][0-9][0-9]\)/\3-\2-\1/' | # put the date in the right format
 	sed 's/^;//g' > $_OUTFILE
-echo -e ".separator ';' \n.import $_OUTFILE sensor_temp" | sqlite3 /root/bin/mobilealerts/mobilealerts.db
+echo -e ".separator ';' \n.import $_OUTFILE sensor_temp" | sqlite3 ./mobilealerts.db
 cp $_OUTFILE temp.csv
 
 # wind sensor
@@ -65,10 +68,13 @@ curl -s -i -k  -X 'POST' \
 	sed 's/ m\/s//g' |
 	sed 's/\([0-9][0-9]\).\([0-9][0-9]\).\([0-9][0-9][0-9][0-9]\)/\3-\2-\1/' | # put the date in the right format
 	sed 's/^;//g' > $_OUTFILE
-echo -e ".separator ';' \n.import $_OUTFILE sensor_wind" | sqlite3 /root/bin/mobilealerts/mobilealerts.db
+echo -e ".separator ';' \n.import $_OUTFILE sensor_wind" | sqlite3 ./mobilealerts.db
 cp $_OUTFILE wind.csv
 
 # 	--data-binary $"deviceid=$_DEVICEID&vendorid=C7BB7FBE-BCEB-48D0-9A49-764A24A6E545&appbundle=de.synertronixx.remotemonitor&fromepoch=$_FROME&toepoch=$_TOE&from=$_FROM&to=$_TO&pagesize=250"\
+
+rm $_OUTFILE
+
 unset _PHONEID
 unset _DEVICEID
 
